@@ -31,16 +31,17 @@
         $('#startBtn').on('click', board1.start);
         $('#clearBtn').on('click', board1.clear);
     </script>
-    <script type = "module">
-        import { Chess } from 'chess.js'
+    <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
+    <script>
+        const chess = new Chess();
 
-        const chess = new Chess()
-        while (!chess.isGameOver()) {
-            const moves = chess.moves()
-            const move = moves[Math.floor(Math.random() * moves.length)]
-            chess.move(move)
+        while (!chess.game_over()) {
+            const moves = chess.moves();
+            const move = moves[Math.floor(Math.random() * moves.length)];
+            chess.move(move);
         }
-        console.log(chess.pgn())
+
+        console.log(chess.pgn());
     </script>
 </div>
 {% endblock %}
