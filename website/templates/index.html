@@ -26,23 +26,23 @@
             </table>
         </div>
         <script>
-                function update_table() {
-                    const history = game.history();
-                    const $tbody = $('#moveTable tbody');
-                    $tbody.empty();
+            function update_table() {
+                const history = game.history();
+                const $tbody = $('#moveTable tbody');
+                $tbody.empty();
 
-                    for (let i = 0; i < history.length; i += 2) {
-                        const moveNum = Math.floor(i / 2) + 1;
-                        const whiteMove = history[i];
-                        const blackMove = history[i + 1] || '';
-                        const row = `<tr>
+                for (let i = 0; i < history.length; i += 2) {
+                    const moveNum = Math.floor(i / 2) + 1;
+                    const whiteMove = history[i];
+                    const blackMove = history[i + 1] || '';
+                    const row = `<tr>
                    <td>${moveNum}</td>
                    <td>${whiteMove}</td>
                    <td>${blackMove}</td>
                  </tr>`;
-                        $tbody.append(row);
-                    }
+                    $tbody.append(row);
                 }
+            }
         </script>
         <div class="col">
             <div id="board1" style="width: 400px"></div>
@@ -51,8 +51,29 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/9.0.0/stockfish.js"></script>
     <script>
         const game = new Chess();
+        var $status = $('#status')
+        var $fen = $('#fen')
+        var $pgn = $('#pgn')
+
+        var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+        var stockfish = new Worker('static/stockfish1/stockfish.js');
+
+        document.getElementById('board1').addEventListener('touchmove', function (e) {
+            e.preventDefault(); // Prevent the default scrolling behavior
+        }, { passive: false });
+
+
+        stockfish.addEventListener('message', function (e) {
+            if (e.data.startsWith('bestmove')) {
+                var bestMove = e.data.split(' ')[1];
+                game.move({ from: bestMove.slice(0, 2), to: bestMove.slice(2, 4), promotion: 'q' });
+                board1.position(game.fen());
+                update_table();
+            }
+        });
         var board1 = Chessboard('board1', {
             draggable: true,
             dropOffBoard: 'trash',
@@ -73,9 +94,11 @@
                     promotion: 'q'
                 });
                 if (move === null) return 'snapback';
-                console.log("Move:", move.san);
+                //console.log("Move:", move.san);
                 var table = console.log("PGN", game.pgn());
                 update_table();
+                stockfish.postMessage('position fen ' + game.fen());
+                stockfish.postMessage('go depth 15');
             },
             onSnapEnd: function () {
                 board1.position(game.fen());
