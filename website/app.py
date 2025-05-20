@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect
 import mimetypes
+from openai import OpenAI
 
 mimetypes.add_type('application/wasm', '.wasm')
 app = Flask(__name__)
@@ -14,6 +15,11 @@ def index():
     print("yo")
     if request.method == "GET":
         return render_template("index.html")
+@app.route("/analyze", methods=["GET", "POST"])
+def analyze():
+        print("analyzing")
+        if request.method == "GET":
+             return render_template("analysis.html")
 
 if __name__ == "__main__":
     app.run()

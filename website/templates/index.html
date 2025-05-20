@@ -81,7 +81,12 @@
             pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
             position: 'start',
             onDragStart: function (source, piece) {
-                if (game.game_over()) return false;
+                if (game.game_over()) {
+                    update_table()
+                    console.log("GGs")
+                    var log = console.log("PNG", game.png())
+                    return false, log;
+                }
                 if ((game.turn() === 'w' && piece.startsWith('b')) ||
                     (game.turn() === 'b' && piece.startsWith('w'))) {
                     return false;
@@ -104,10 +109,12 @@
                 board1.position(game.fen());
             },
         });
+
         // $('#startBtn').on('click', board1.start);
         // $('#clearBtn').on('click', board1.clear);
 
         // board1.log(chess.pgn());
     </script>
+
 </div>
 {% endblock %}

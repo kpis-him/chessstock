@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<div class = "row">
+    <div class="col">
+        <div id="logOutput" style="white-space: pre-wrap; font-family: monospace;">
+            <script>
+                function log(msg){
+                    const logdiv =  document.getElementById("logOutput");
+                    logDiv.textContent += msg + "\n";
+                }
+            </script>
+        </div>
+    </div>
+</div>
+{%endblock%}
