@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<title>
+    Play Chess Against Stockfish
+</title>
+<div class="container mt-4">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard.js/1.0.0/chessboard-1.0.0.min.css" />
+
+    <div class="row">
+        <div class="col">
+            <table id="moveTable" class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>White</th>
+                        <th>Black</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <script>
+            function update_table() {
+                const history = game.history();
+                const $tbody = $('#moveTable tbody');
+                $tbody.empty();
+
+                for (let i = 0; i < history.length; i += 2) {
+                    const moveNum = Math.floor(i / 2) + 1;
+                    const whiteMove = history[i];
+                    const blackMove = history[i + 1] || '';
+                    const row = `<tr>
+                   <td>${moveNum}</td>
+                   <td>${whiteMove}</td>
+                   <td>${blackMove}</td>
+                 </tr>`;
+                    $tbody.append(row);
+                }
+            }
+        </script>
+        <div class="col">
+            <div id="board1" style="width: 400px"></div>
+            <!--<button id="startBtn" class="btn btn-primary mt-2">Start Position</button>
+            <button id="clearBtn" class="btn btn-danger mt-2">Clear Board</button>-->
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/9.0.0/stockfish.js"></script>
+    <script>
+        const game = new Chess();
+        var $status = $('#status')
+        var $fen = $('#fen')
+        var $pgn = $('#pgn')
+
+        var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+        var stockfish = new Worker('static/stockfish1/stockfish.js');
+
+        document.getElementById('board1').addEventListener('touchmove', function (e) {
+            e.preventDefault(); // Prevent the default scrolling behavior
+        }, { passive: false });
+
+
+        stockfish.addEventListener('message', function (e) {
+            if (e.data.startsWith('bestmove')) {
+                var bestMove = e.data.split(' ')[1];
+                game.move({ from: bestMove.slice(0, 2), to: bestMove.slice(2, 4), promotion: 'q' });
+                board1.position(game.fen());
+                update_table();
+            }
+        });
+        var board1 = Chessboard('board1', {
+            draggable: true,
+            dropOffBoard: 'trash',
+            sparePieces: false,
+            pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
+            position: 'start',
+            onDragStart: function (source, piece) {
+                if (game.game_over()) {
+                    update_table()
+                    console.log("GGs")
+                    var log = console.log("PNG", game.png())
+                    return false, log;
+                }
+                if ((game.turn() === 'w' && piece.startsWith('b')) ||
+                    (game.turn() === 'b' && piece.startsWith('w'))) {
+                    return false;
+                }
+            },
+            onDrop: function (source, target) {
+                const move = game.move({
+                    from: source,
+                    to: target,
+                    promotion: 'q'
+                });
+                if (move === null) return 'snapback';
+                //console.log("Move:", move.san);
+                var table = console.log("PGN", game.pgn());
+                update_table();
+                stockfish.postMessage('position fen ' + game.fen());
+                stockfish.postMessage('go depth 15');
+            },
+            onSnapEnd: function () {
+                board1.position(game.fen());
+            },
+        });
+
+        // $('#startBtn').on('click', board1.start);
+        // $('#clearBtn').on('click', board1.clear);
+
+        // board1.log(chess.pgn());
+    </script>
+
+</div>
+{% endblock %}

@@ -15,11 +15,30 @@ def index():
     print("yo")
     if request.method == "GET":
         return render_template("index.html")
+    
 @app.route("/analyze", methods=["GET", "POST"])
 def analyze():
         print("analyzing")
         if request.method == "GET":
              return render_template("analysis.html")
+        
+@app.route("/chess", methods=["GET", "POST"])
+def chess():
+        print("chess")
+        if request.method == "GET":
+             return render_template("chess.html")
+        
+@app.route("/myopuzzle", methods=["GET", "POST"])
+def myopuzzle():
+        print("makingyourownpuzzle")
+        if request.method == "GET":
+             return render_template("myopuzzle.html")
+        
+@app.route("/pubpuzzles", methods=["GET", "POST"])
+def pubpuzzles():
+        print("public")
+        if request.method == "GET":
+             return render_template("pubpuzzles.html")
 
 if __name__ == "__main__":
     app.run()
