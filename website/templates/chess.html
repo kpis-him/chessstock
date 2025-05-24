@@ -17,6 +17,11 @@
 
     <div class="row">
         <div class="col">
+             <form>
+               <label for="name">Enter your difficulty(integer from 1-15):</label>
+               <input type="text" id="diff" name="difficulty">
+               <button type="button" onclick="get_diff()">Submit</button>
+            </form>
             <table id="moveTable" class="table table-striped mt-4">
                 <thead>
                     <tr>
@@ -55,6 +60,12 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/9.0.0/stockfish.js"></script>
+    <script>
+                function get_diff()  {
+                    var diff = document.getElementById("diff").value;
+                    console.log("diff = ", diff)
+                }
+    </script>
     <script>
         const game = new Chess();
         var $status = $('#status')
@@ -103,21 +114,4 @@
                 });
                 if (move === null) return 'snapback';
                 //console.log("Move:", move.san);
-                var table = console.log("PGN", game.pgn());
-                update_table();
-                stockfish.postMessage('position fen ' + game.fen());
-                stockfish.postMessage('go depth 15');
-            },
-            onSnapEnd: function () {
-                board1.position(game.fen());
-            },
-        });
-
-        // $('#startBtn').on('click', board1.start);
-        // $('#clearBtn').on('click', board1.clear);
-
-        // board1.log(chess.pgn());
-    </script>
-
-</div>
-{% endblock %}
+                var table = console.log("PGN", game.pgn(

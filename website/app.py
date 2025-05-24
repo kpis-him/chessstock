@@ -33,6 +33,8 @@ def myopuzzle():
         print("makingyourownpuzzle")
         if request.method == "GET":
              return render_template("myopuzzle.html")
+        if request.method == "POST":
+             return render_template("myopuzzle.html")   
         
 @app.route("/pubpuzzles", methods=["GET", "POST"])
 def pubpuzzles():

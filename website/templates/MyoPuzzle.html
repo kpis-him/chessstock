@@ -4,4 +4,153 @@
 <title>
     Make Your Own Puzzle!
 </title>
-<div class="co
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form>
+               <label for="name">Enter your difficulty(integer from 1-15):</label>
+               <input type="text" id="diff" name="difficulty">
+               <button type="button" onclick="get_diff()">Submit</button>
+            </form>
+            <script>
+                function get_diff()  {
+                    var diff = document.getElementById("diff").value;
+                    console.log("diff = ", diff)
+                }
+            </script>
+            <div id="board2" style="width: 400px"></div>
+            <button id="startBtn">Start Position</button>
+            <button id="clearBtn">Clear Board</button>
+            <button id="lock">Start Puzzle</button>
+            <p id="fenOutput"></p>
+            <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
+            <script>
+                var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+                var stockfish = new Worker('static/stockfish1/stockfish.js');
+
+                document.getElementById('board2').addEventListener('touchmove', function (e) {
+                    e.preventDefault(); // Prevent the default scrolling behavior
+                }, { passive: false });
+                var board2;
+                let chess = new Chess();
+
+                function getPNG() {
+                    var fen = board2.fen();
+                    console.log(fen);
+                    document.getElementById("fenOutput").innerText = fen;
+                    return fen;
+                }
+                let puzzleLocked = false;
+                let bestMove = null;
+                board2 = Chessboard('board2', {
+                    draggable: true,
+                    dropOffBoard: 'trash',
+                    pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
+                    sparePieces: true,
+                    onDragStart: function (source, piece) {
+                        if (!puzzleLocked) return;
+                        if (chess.game_over()) return false;
+                        if ((chess.turn() === 'w' && piece.startsWith('b')) ||
+                            (chess.turn() === 'b' && piece.startsWith('w'))) return false;
+                    },
+                    onDrop: function (source, target) {
+                        if (!puzzleLocked) return;
+
+                        if (chess.turn() !== 'w') return 'snapback'; // Only allow white to move
+
+                        const move = chess.move({
+                            from: source,
+                            to: target,
+                            promotion: 'q'
+                        });
+
+                        if (move === null) return 'snapback';
+
+                        board2.position(chess.fen());
+
+                        if (chess.game_over()) {
+                            alert("You won!");
+                            puzzleLocked = false;
+                            return;
+                        }
+                        stock_move(chess.fen());
+                    }
+
+                });
+
+
+                $('#startBtn').on('click', board2.start);
+                $('#clearBtn').on('click', board2.clear);
+
+                $('#lock').on('click', function () {
+                    const fen = getPNG() + ' w - - 0 1';
+                    const loaded = chess.load(fen);
+
+                    if (!loaded) {
+                        alert("Invalid FEN! Please fix the board.");
+                        return;
+                    }
+
+                    puzzleLocked = true;
+
+                    stockfish.postMessage("uci");
+                    stockfish.postMessage("ucinewgame");
+                    stockfish.postMessage("isready");
+
+                    stockfish.onmessage = function (e) {
+                        const line = e.data;
+
+                        if (line === "readyok") {
+                            stockfish.postMessage("position fen " + fen);
+                            var difficulty = get_diff()
+                            stockfish.postMessage("go depth ", difficulty);
+                        } else if (line.startsWith("bestmove")) {
+                            bestMove = line.split(" ")[1];
+                            console.log("Best move from Stockfish:", bestMove);
+                            board2.position(fen); // update board without reinitializing
+                        }
+                    };
+                });
+
+            </script>
+            <script>
+                function stock_move(fen) {
+                    stockfish.postMessage("position fen " + fen);
+                    difficulty = get_diff()
+                    stockfish.postMessage("go depth ",difficulty);
+
+                    stockfish.onmessage = function (e) {
+                        const line = e.data;
+
+                        if (line.startsWith("bestmove")) {
+                            const bestMove = line.split(" ")[1];
+                            if (bestMove === "(none)") {
+                                alert("Black has no legal moves!");
+                                puzzleLocked = false;
+                                return;
+                            }
+
+                            const move = chess.move({
+                                from: bestMove.slice(0, 2),
+                                to: bestMove.slice(2, 4),
+                                promotion: 'q'
+                            });
+
+                            if (move) {
+                                board2.position(chess.fen());
+
+                                if (chess.game_over()) {
+                                    alert("Stockfish wins or game over!");
+                                    puzzleLocked = false;
+                                }
+                            }
+                        }
+                    };
+                }
+
+            </script>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
