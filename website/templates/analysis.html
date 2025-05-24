@@ -1,16 +1,15 @@
 {% extends "layout.html" %}
 
 {% block main %}
-<div class = "row">
+<div class="row">
     <div class="col">
-        <div id="logOutput" style="white-space: pre-wrap; font-family: monospace;">
-            <script>
-                function log(msg){
-                    const logdiv =  document.getElementById("logOutput");
-                    logDiv.textContent += msg + "\n";
-                }
-            </script>
-        </div>
-    </div>
-</div>
-{%endblock%}
+        <h1 class="faculty">Welcome to the Analyzer!</h1>
+        <form action="{{url_for('analyze')}}" method="post">
+            Paste your PGN:<br>
+            <input type="text" name="pgn">
+
+        <br>
+
+            What color did you play?<br>
+            <input  type="radio" name="color" value="white">White</option><br>
+            <input  type="

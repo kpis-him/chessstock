@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, url_for, redirect
 import mimetypes
-from openai import OpenAI
+from google import genai
 
 mimetypes.add_type('application/wasm', '.wasm')
 app = Flask(__name__)
+client = genai.Client(api_key="AIzaSyCia1tPbcRDufrRr5a1J-b1ZTQaeWEh4SI")
 @app.after_request
 def add_coop_coep_headers(response):
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
@@ -21,6 +22,17 @@ def analyze():
         print("analyzing")
         if request.method == "GET":
              return render_template("analysis.html")
+        if request.method == "POST":
+              pgn = request.form.get("pgn")
+              color = request.form.get("color")
+              elo = request.form.get("elo")
+              response = client.models.generate_content(
+                model="gemini-2.0-flash", 
+                contents=f"Analyze this game, i'm {color}, the pgn is {pgn}, my opponent's elo is about {elo}, give me my 'chess personality type' and some evid for it, make it plain text"
+                )
+              alpha = response.text
+              return render_template("analyzed.html", response=alpha)
+
         
 @app.route("/chess", methods=["GET", "POST"])
 def chess():
