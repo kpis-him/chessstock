@@ -2,6 +2,33 @@
 
 {%block main%}
 <div class="container">
-    <p>{{response}}</p>
+    <div class="row">
+        <div class="col">
+            <p>{{response}}</p>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chess.js@0.13.4/chess.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/chessboard.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/chessboard.min.css">
+    <style>
+        #board{
+            width: 400px;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        var board1 = Chessboard('board1', {
+            draggable: true,
+            dropOffBoard: 'trash',
+            sparePieces: false,
+            pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
+            position: 'start'
+        });
+        const game = new Chess();
+        const pgn = "{{pgn|tojson}}";
+        game.load_pgn(pgn);
+        
+    </script>
+        </div>
+    </div>
 </div>
 {%endblock%}

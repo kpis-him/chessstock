@@ -31,7 +31,7 @@ def analyze():
                 contents=f"Analyze this game, i'm {color}, the pgn is {pgn}, my opponent's elo is about {elo}, give me my 'chess personality type' and some evid for it, make it plain text"
                 )
               alpha = response.text
-              return render_template("analyzed.html", response=alpha)
+              return render_template("analyzed.html", response=alpha, pgn=pgn)
 
         
 @app.route("/chess", methods=["GET", "POST"])

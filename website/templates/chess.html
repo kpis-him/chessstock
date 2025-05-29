@@ -114,4 +114,22 @@
                 });
                 if (move === null) return 'snapback';
                 //console.log("Move:", move.san);
-                var table = console.log("PGN", game.pgn(
+                var table = console.log("PGN", game.pgn());
+                update_table();
+                stockfish.postMessage('position fen ' + game.fen());
+                diff = get_diff();
+                stockfish.postMessage('go depth ',diff);
+            },
+            onSnapEnd: function () {
+                board1.position(game.fen());
+            },
+        });
+
+        // $('#startBtn').on('click', board1.start);
+        // $('#clearBtn').on('click', board1.clear);
+
+        // board1.log(chess.pgn());
+    </script>
+
+</div>
+{% endblock %
