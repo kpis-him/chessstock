@@ -32,28 +32,16 @@
             </div>
 
             <br>
-            <div class="card">
-                <div class="card-body card-color">
-                    <h5 class="card-title ubuntu-mono-regular">
-                        How old are you:</br>
-
-                        <div id="slider"></div>
-                        <p>Value:
-                            <input type="text" onclick=bar1(15) id="slider-value" name="age">
-                    </h5>
-                </div>
-            </div>
             <br>
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title ubuntu-mono-regular">
-                        What is your favortie genre?:<br />
-                        <input onclick=bar1(25) type="radio" name="personality" value="fant">Fantasies</option><br>
-                        <input onclick=bar1(25) type="radio" name="personality" value="scifi">Science fiction</option>
+                        How do you handle pressure:<br />
+                        <input onclick=bar1(25) type="radio" name="pressure" value="loveit">I love it</option><br>
+                        <input onclick=bar1(25) type="radio" name="pressure" value="calm">I stay calm</option>
                         <br>
-                        <input onclick=bar1(25) type="radio" name="personality" value="adv">Adventure</option><br>
-                        <input onclick=bar1(25) type="radio" name="personality" value="fam">Family</option><br>
-                        <input onclick=bar1(25) type="radio" name="personality" value="drama">Dramas</option><br>
+                        <input onclick=bar1(25) type="radio" name="pressure" value="panic">I panic</option><br>
+                        <input onclick=bar1(25) type="radio" name="pressure" value="avoid">I avoid it</option><br>
                         <br>
                     </h5>
                 </div>
@@ -62,19 +50,15 @@
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title">
-                        What is your ideal vacation?:<br>
-                        <input onclick=bar1(30) type="radio" name="vacation" value="city">
-                        <img id=div2 src="{{ url_for('static', filename='images/newyork.png') }}" alt="" />
-                        New York City<br>
-                        <input onclick=bar1(30) type="radio" name="vacation" value="town">
-                        <img id=div2 src="{{ url_for('static', filename='images/suburb.png') }}" alt="" />
-                        Countryside<br>
-                        <input onclick=bar1(30) type="radio" name="vacation" value="beach">
-                        <img id=div2 src="{{ url_for('static', filename='images/beach.png') }}" alt="" />
-                        The Bahamas<br>
-                        <input onclick=bar1(30) type="radio" name="vacation" value="woods">
-                        <img id=div2 src="{{ url_for('static', filename='images/woods.png') }}" alt="" />
-                        A camping trip<br>
+                        What describes you:<br>
+                        <input onclick=bar1(30) type="radio" name="personality" value="aggressive">
+                        Gambler<br>
+                        <input onclick=bar1(30) type="radio" name="personality" value="tactics">
+                        Tactical<br>
+                        <input onclick=bar1(30) type="radio" name="personality" value="sneaky">
+                        Sneaky<br>
+                        <input onclick=bar1(30) type="radio" name="personality" value="random">
+                        Random<br>
                         <br>
                     </h5>
                 </div>
@@ -83,12 +67,11 @@
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title">
-                        What best describes you:<br>
-                        <input onclick=bar1(40) type="radio" name="traits" value="b">Brave<br>
-                        <input onclick=bar1(40) type="radio" name="traits" value="l">Loyal<br>
-                        <input onclick=bar1(40) type="radio" name="traits" value="c">Sophisticated<br>
-                        <input onclick=bar1(40) type="radio" name="traits" value="k">Kind<br>
-                        <input onclick=bar1(40) type="radio" name="traits" value="s">Sad<br>
+                        How would you start a game of chess:<br>
+                        <input onclick=bar1(40) type="radio" name="traits" value="attack">Attack first, defend last<br>
+                        <input onclick=bar1(40) type="radio" name="traits" value="develop">Develop calmly<br>
+                        <input onclick=bar1(40) type="radio" name="traits" value="positional">Attack weaknesses<br>
+                        <input onclick=bar1(40) type="radio" name="traits" value="random">Whatever I feel like<br>
                         <br>
                     </h5>
                 </div>
@@ -97,11 +80,11 @@
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title">
-                        How do you like spending your free time:<br>
-                        <input onclick=bar1(50) type="radio" name="time" value="volunteering">Helping other people<br>
-                        <input onclick=bar1(50) type="radio" name="time" value="loved">Time with loved ones<br>
-                        <input onclick=bar1(50) type="radio" name="time" value="hobbies">Doing things you love<br>
-                        <input onclick=bar1(50) type="radio" name="time" value="party">Partying<br>
+                        You are offered a risky sacrifice- what do you do?<br>
+                        <input onclick=bar1(50) type="radio" name="sac" value="volunteering">Take it<br>
+                        <input onclick=bar1(50) type="radio" name="sac" value="loved">Calculate every outcome<br>
+                        <input onclick=bar1(50) type="radio" name="sac" value="drinking">Set a trap<br>
+                        <input onclick=bar1(50) type="radio" name="sac" value="party">Flip a coin<br>
                         <br>
                     </h5>
                 </div>
@@ -110,11 +93,11 @@
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title ubuntu-mono-regular">
-                        What is your favorite type of food:<br />
-                        <input onclick=bar1(60) type="radio" name="food" value="exotic">Exotic cuisines<br />
-                        <input onclick=bar1(60) type="radio" name="food" value="comfort">Comfort food<br />
-                        <input onclick=bar1(60) type="radio" name="food" value="gourmet">Gourmet food<br />
-                        <input onclick=bar1(60) type="radio" name="food" value="healthy">Healthy Greens<br />
+                        How long do you take to make a big decision:<br />
+                        <input onclick=bar1(60) type="radio" name="think" value="gut">I trust my gut<br />
+                        <input onclick=bar1(60) type="radio" name="think" value="calculate">I always take my time<br />
+                        <input onclick=bar1(60) type="radio" name="think" value="scenario">Depends<br />
+                        <input onclick=bar1(60) type="radio" name="think" value="hope">I move and hope for the best<br />
                         <br>
                     </h5>
                 </div>
@@ -123,38 +106,25 @@
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title ubuntu-mono-regular">
-                        How do you react in crisis:<br />
-                        <input onclick=bar1(65) type="radio" name="leader" value="alpha">Take charge<br />
-                        <input onclick=bar1(65) type="radio" name="leader" value="thinker">Stay calm and find a
-                        solution<br />
-                        <input onclick=bar1(65) type="radio" name="leader" value="solver">Panic<br />
-                        <input onclick=bar1(65) type="radio" name="leader" value="help">Offer support and comfort to
-                        others<br />
+                        What piece describes you the best:<br />
+                        <input onclick=bar1(65) type="radio" name="leader" value="queen">Queen<br />
+                        <input onclick=bar1(65) type="radio" name="leader" value="knight">Knight<br />
+                        <input onclick=bar1(65) type="radio" name="leader" value="bishop">Bishop<br />
+                        <input onclick=bar1(65) type="radio" name="leader" value="help">Pawn<br />
                         <br>
                     </h5>
                 </div>
             </div>
             <br>
-            <div class="card">
-                <div class="card-body card-color">
-                    <h5 class="card-title ubuntu-mono-regular">
-                        Favorite music:</br>
-                        <input onclick=bar1(70) type="radio" name="muisc" value="rap">Rap/Hiphop<br />
-                        <input onclick=bar1(70) type="radio" name="music" value="jazz">Jazz<br />
-                        <input onclick=bar1(70) type="radio" name="music" value="pop">Pop<br />
-                        <input onclick=bar1(70) type="radio" name="music" value="class">Classical<br />
-                    </h5>
-                </div>
-            </div>
             <br>
             <div class="card">
                 <div class="card-body card-color">
                     <h5 class="card-title ubuntu-mono-regular">
                         How do you unwind after a long day(choose all that apply):<br />
-                        <input onclick=bar1(80) type="checkbox" name="unwind" value="zzz">Sleep<br />
-                        <input onclick=bar1(80) type="checkbox" name="unwind" value="book">Reading a book<br />
-                        <input onclick=bar1(80) type="checkbox" name="unwind" value="music">Music<br />
-                        <input onclick=bar1(80) type="checkbox" name="unwind" value="walk">Taking a walk<br />
+                        <input onclick=bar1(80) type="radio" name="approach" value="dominate">Dominate and force a win<br />
+                        <input onclick=bar1(80) type="radio" name="appeoach" value="slowly">wear them down slowly<br />
+                        <input onclick=bar1(80) type="radio" name="approach" value="wait">wait for a mistake<br />
+                        <input onclick=bar1(80) type="radio" name="approach" value="surprise">surprise and confuse them<br />
                     </h5>
                 </div>
             </div>

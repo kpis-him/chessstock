@@ -53,6 +53,36 @@ def pubpuzzles():
         print("public")
         if request.method == "GET":
              return render_template("pubpuzzles.html")
+        if request.method == "POST":
+              agressive = 0
+              calculator = 0
+              tactical = 0
+              random = 0
+              pressure = request.form.get("pressure")
+              if pressure == "loveit":
+                    aggressive +=1
+                    calculator += 0.5
+                    tactical +=1
+                    random+=1
+              if pressure == "calm":
+                    aggressive +=1
+                    calculator +=1
+                    tactical += 1
+                    random+=0
+              if pressure == "panic":
+                    aggressive +=0
+                    calculator +=0
+                    tactical += 0
+                    random += 1
+              if pressure == "avoid":
+                    aggressive +=0
+                    calculator +=1
+                    tactical += 0
+                    random+=1
+               
+               
+
+              return render_template("bot.html")
 
 if __name__ == "__main__":
     app.run()
