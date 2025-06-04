@@ -119,7 +119,7 @@
                 stockfish.postMessage('position fen ' + game.fen());
                 diff = get_diff();
                 stockfish.postMessage('go depth ',diff);
-                stockfish.postMessage('go movetime 500');
+                stockfish.postMessage('go movetime 500ms');
             },
             onSnapEnd: function () {
                 board1.position(game.fen());
