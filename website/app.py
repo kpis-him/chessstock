@@ -3,6 +3,7 @@ import mimetypes
 from google import genai
 import markdown
 from bs4 import BeautifulSoup
+import gunicorn
 mimetypes.add_type('application/wasm', '.wasm')
 app = Flask(__name__)
 client = genai.Client(api_key="AIzaSyCia1tPbcRDufrRr5a1J-b1ZTQaeWEh4SI")
