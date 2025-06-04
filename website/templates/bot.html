@@ -1,6 +1,10 @@
 {%extends "layout.html"%}
 
 {%block main%}
-<p>hello</p>
+<p>hello {{name}}</p>
+<h1>You are a/an {{winner}} player!!</h1>
+
+<p>{{response | safe}}</p>
+<h2>Do you want to play your new bot?</h2>
 
 {%endblock%}

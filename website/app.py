@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect
 import mimetypes
 from google import genai
-
+import markdown
+from bs4 import BeautifulSoup
 mimetypes.add_type('application/wasm', '.wasm')
 app = Flask(__name__)
 client = genai.Client(api_key="AIzaSyCia1tPbcRDufrRr5a1J-b1ZTQaeWEh4SI")
@@ -52,37 +53,4 @@ def myopuzzle():
 def pubpuzzles():
         print("public")
         if request.method == "GET":
-             return render_template("pubpuzzles.html")
-        if request.method == "POST":
-              agressive = 0
-              calculator = 0
-              tactical = 0
-              random = 0
-              pressure = request.form.get("pressure")
-              if pressure == "loveit":
-                    aggressive +=1
-                    calculator += 0.5
-                    tactical +=1
-                    random+=1
-              if pressure == "calm":
-                    aggressive +=1
-                    calculator +=1
-                    tactical += 1
-                    random+=0
-              if pressure == "panic":
-                    aggressive +=0
-                    calculator +=0
-                    tactical += 0
-                    random += 1
-              if pressure == "avoid":
-                    aggressive +=0
-                    calculator +=1
-                    tactical += 0
-                    random+=1
-               
-               
-
-              return render_template("bot.html")
-
-if __name__ == "__main__":
-    app.run()
+             return render_template("pubpuzzles.htm
