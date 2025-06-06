@@ -4,6 +4,7 @@ from google import genai
 import markdown
 from bs4 import BeautifulSoup
 import re
+import spotipy
 
 
 mimetypes.add_type('application/wasm', '.wasm')
@@ -218,6 +219,7 @@ def pubpuzzles():
                     random+=1
                elo = request.form.get("elo")
                variables = {"aggressor": aggressive, "calculative": calculator, "tactical": tactical, "wild-type":random}
+               songs = {"aggressor": "hip-hop", "calculative": calculator, "tactical": tactical, "wild-type":random}
                winner = max(variables, key=variables.get)
                print(winner)
                response1 = client.models.generate_content(
