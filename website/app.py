@@ -3,10 +3,12 @@ import mimetypes
 from google import genai
 import markdown
 from bs4 import BeautifulSoup
-import gunicorn
+import re
+
+
 mimetypes.add_type('application/wasm', '.wasm')
 app = Flask(__name__)
-client = genai.Client(api_key="AIzaSyCia1tPbcRDufrRr5a1J-b1ZTQaeWEh4SI")
+client = genai.Client(api_key="AIzaSyBbmk-ZMKpywSb_GMCBtjkiGamltst9k2Q")
 @app.after_request
 def add_coop_coep_headers(response):
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
@@ -26,14 +28,20 @@ def analyze():
              return render_template("analysis.html")
         if request.method == "POST":
               pgn = request.form.get("pgn")
+              clean_pgn = re.sub(r"\[.*?\]", "", pgn)
+              clean_pgn = clean_pgn.strip()
               color = request.form.get("color")
               elo = request.form.get("elo")
               response = client.models.generate_content(
                 model="gemini-2.0-flash", 
-                contents=f"Analyze this game, i'm {color}, the pgn is {pgn}, my opponent's elo is about {elo}, give me my 'chess personality type' and some evid for it, make it plain text"
+                contents=f"Analyze this game, i'm {color}, the pgn is {pgn}, my opponent's elo is about {elo}, give me my 'chess personality type' and some evid for it, make it encouraging"
                 )
-              alpha = response.text
-              return render_template("analyzed.html", response=alpha, pgn=pgn)
+              text = response.candidates[0].content.parts[0].text
+              text1 = BeautifulSoup(text, "html.parser").get_text()
+              pgn1 = clean_pgn
+              print(pgn1)
+              response = markdown.markdown(text1)
+              return render_template("analyzed.html", response=response, pgn=pgn1)
 
         
 @app.route("/chess", methods=["GET", "POST"])
@@ -223,14 +231,6 @@ def pubpuzzles():
                response = markdown.markdown(text1)
                return render_template("bot.html", winner=winner, response=response, name=name, elo=elo)
 
-        
-#@app.route("/bot", methods=["GET", "POST"])
-#def bot():
-#     if request.method == "POST":
-#          return render_template("play.html")
-#@app.route("/play", methods=["GET", "POST"])
-#def play():
-#     winner = request.args.get("winner")
 
 if __name__ == "__main__":
     app.run()

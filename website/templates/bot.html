@@ -27,106 +27,155 @@
         <h5>{{elo}}</h5>
 
         <div id="board" style="width: 400px">
-            <script>
-                var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
-                var stockfish = new Worker('static/stockfish1/stockfish.js');
-                var game = new Chess()
+        </div>
+        <script>
+            var stockfish = new Worker('static/stockfish1/stockfish.js');
+            var game = new Chess();
+            const userColor = 'w';
+            const engineColor = 'b';
+            var engineThinking = false;
+            var moveList = [];
+            var hintRequested = false;
+            const persona = "{{winner}}".toLowerCase();
 
-                var board = Chessboard('board', {
-                    position: 'start',
-                    pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
-                    draggable: true,
-                    onDragStart: function (source, piece) {
-                        if (game.game_over()) {
-                            update_table()
-                            console.log("GGs")
-                            var log = console.log("PNG", game.png())
-                            return false, log;
-                        }
-                        if ((game.turn() === 'w' && piece.startsWith('b')) ||
-                            (game.turn() === 'b' && piece.startsWith('w'))) {
-                            return false;
-                        }
-                    },
-                    onDrop: function (source, target) {
-                        const move = game.move({
-                            from: source,
-                            to: target,
-                            promotion: 'q'
-                        });
-                        if (move === null) return 'snapback';
-                        //console.log("Move:", move.san);
-                        var table = console.log("PGN", game.pgn());
+            var board = Chessboard('board', {
+                position: 'start',
+                pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
+                draggable: true,
+                onDragStart: function (source, piece) {
+                    if (game.game_over()) {
+                        console.log("Game over!");
+                        return false;
+                    }
+                    // Only allow user to move their pieces
+                    if ((game.turn() === 'w' && piece.startsWith('b')) ||
+                        (game.turn() === 'b' && piece.startsWith('w'))) {
+                        return false;
+                    }
+                    // Prevent move while engine thinking
+                    if (engineThinking) return false;
+                },
+                onDrop: function (source, target) {
+                    if (engineThinking) return 'snapback';
+
+                    // Try to make move on the game
+                    const move = game.move({
+                        from: source,
+                        to: target,
+                        promotion: 'q' // always promote to queen for simplicity
+                    });
+
+                    if (move === null) return 'snapback';
+
+                    console.log("User move:", move.san);
+
+                    board.position(game.fen());
+
+                    // If now it's engine's turn, tell engine to think
+                    if (game.turn() === engineColor) {
+                        engineThinking = true;
+                        stockfish.postMessage('stop');
                         stockfish.postMessage('position fen ' + game.fen());
-                        stockfish.postMessage('go depth',"{{elo}}"/90);
-                        //stockfish.postMessage('go movetime 500ms');
-                    },
-                    onSnapEnd: function () {
-                        board.position(game.fen());
-                    },
-                })
-                document.getElementById('board').addEventListener('touchmove', function (e) {
-                    e.preventDefault(); // Prevent the default scrolling behavior
-                }, { passive: false });
 
-
-
-                let moveList = [];
-                const persona = "{{winner}}".toLowerCase();
-
-                stockfish.postMessage("setoption name MultiPV value 3");
-
-                stockfish.addEventListener('message', function (e) {
-                    const line = e.data;
-
-                    if (line.includes(" pv ")) {
-                        const parts = line.split(" pv ");
-                        const move = parts[1].split(" ")[0];
-                        if (!moveList.includes(move)) {
-                            moveList.push(move);
-                        }
+                        // Determine depth based on elo variable
+                        const elo = '{{elo|int}}';
+                        let depth = Math.floor(elo / 210);
+                        depth = Math.min(Math.max(depth, 5), 10);
+                        stockfish.postMessage(`go depth ${depth}`);
                     }
+                },
+                onSnapEnd: function () {
+                    board.position(game.fen());
+                }
+            });
 
-                    if (line.startsWith('bestmove')) {
-                        const selectedMove = chooseMoveByPersona(moveList, persona);
-                        if (!selectedMove) return;
+            // Disable scrolling on touch drag for the board
+            document.getElementById('board').addEventListener('touchmove', function (e) {
+                e.preventDefault();
+            }, { passive: false });
 
-                        game.move({
-                            from: selectedMove.slice(0, 2),
-                            to: selectedMove.slice(2, 4),
-                            promotion: 'q'
-                        });
-                        board.position(game.fen());
-                        moveList = []; // reset for next turn
-                    }
-                });
+            stockfish.postMessage("setoption name MultiPV value 3");
 
-                function chooseMoveByPersona(moves, type) {
-                    if (moves.length === 0) return null;
+            stockfish.addEventListener('message', function (e) {
+                const line = e.data;
 
-                    switch (type) {
-                        case "calculator":
-                            return moves[0]; // best move
-                        case "tactical":
-                            return moves[1] || moves[0]; // 2nd best
-                        case "random":
-                            return moves[Math.floor(Math.random() * moves.length)];
-                        case "aggressive":
-                            // Try to pick a capturing move
-                            const captures = moves.filter(m => m.includes("x"));
-                            return captures[0] || moves[0];
-                        default:
-                            return moves[0];
+                if (line.includes(" pv ")) {
+                    const parts = line.split(" pv ");
+                    const move = parts[1].split(" ")[0];
+                    if (!moveList.includes(move)) {
+                        moveList.push(move);
                     }
                 }
 
+                if (line.startsWith('bestmove')) {
+                    if (hintRequested) {
+                        engineThinking = false;
+                        hintRequested = false;
+                        const bestMove = line.split(' ')[1];
+                        const fromSquare = bestMove.slice(0, 2);
+                        const piece = game.get(fromSquare); // Get piece on 'from' square
+                        let pieceName = '';
+                        if (piece) {
+                            const names = {
+                                p: 'Pawn',
+                                n: 'Knight',
+                                b: 'Bishop',
+                                r: 'Rook',
+                                q: 'Queen',
+                                k: 'King'
+                            };
+                            pieceName = names[piece.type];
+                        }
+                        alert(`Hint: Move your ${pieceName} from ${bestMove.slice(0, 2)} to ${bestMove.slice(2, 4)}`);
+                        document.getElementById('hint').disabled = false;
+                    } else {
+                        if (game.turn() !== engineColor) {
+                            console.log("Ignoring Stockfish move: not engine's turn");
+                            return;
+                        }
 
-            </script>
-            <p>You</p>
-        </div>
-        <div class="col">
+                        const bestMove = line.split(' ')[1];
+                        console.log("Stockfish bestmove:", bestMove);
 
-        </div>
+                        const moveObj = game.move({
+                            from: bestMove.slice(0, 2),
+                            to: bestMove.slice(2, 4),
+                            promotion: bestMove.length > 4 ? bestMove[4] : 'q'
+                        });
+
+                        if (moveObj === null) {
+                            console.error("Illegal move from Stockfish:", bestMove);
+                            engineThinking = false;
+                            return;
+                        }
+
+                        console.log("Engine move executed:", moveObj.san);
+
+                        board.position(game.fen());
+                        moveList = [];
+                        engineThinking = false;
+                    }
+                }
+            });
+
+            function giveHint() {
+                if (engineThinking) return;
+                engineThinking = true;
+                hintRequested = true;
+                document.getElementById('hint').disabled = true;
+
+                stockfish.postMessage('stop');
+
+                setTimeout(() => {
+                    stockfish.postMessage('position fen ' + game.fen());
+                    stockfish.postMessage('go movetime 1000');
+                }, 100);
+            }
+        </script>
+        <p>You</p>
+    </div>
+    <div class="col">
+        <button id="hint" onclick="giveHint()">Hint?</button>
     </div>
 </div>
 {%endblock%}

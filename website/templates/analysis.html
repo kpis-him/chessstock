@@ -5,20 +5,38 @@
     <div class="col">
         <h1 class="faculty">Welcome to the Analyzer!</h1>
         <form action="{{url_for('analyze')}}" method="post">
-            Paste your PGN:<br>
-            <input type="text" name="pgn">
+            <div class="card">
+                <div class="card-body card-color">
+                    <h5 class="card-title ubuntu-mono-regular">
+                        Paste your PGN:<br>
+                    </h5>
+                    <p class="card-text">
+                        <input onclick=bar1(10) type="text" name="pgn"><br />
+                </div>
+            </div>
 
-        <br>
-
-            What color did you play?<br>
-            <input  type="radio" name="color" value="white">White</option><br>
-            <input  type="radio" name="color" value="black">Black</option>
-        <br>
-
-            How skilled do you consider your opponent(Enter ELO):<br>
-            <input type="text" name="elo">
-        <br>
-        <button type="submit">Submit!</button>
+            <br>
+            <div class="card">
+                <div class="card-body card-color">
+                    <h5 class="card-title ubuntu-mono-regular">
+                        How do you handle pressure:<br />
+                        <input onclick=bar1(25) type="radio" name="color" value="white">White</option><br>
+                        <input onclick=bar1(25) type="radio" name="color" value="black">Black</option>
+                    </h5>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-body card-color">
+                    <h5 class="card-title ubuntu-mono-regular">
+                        Opponent's ELO<br>
+                    </h5>
+                    <p class="card-text">
+                        <input onclick=bar1(10) type="text" name="elo"><br />
+                </div>
+            </div>
+            <br>
+            <button type="submit">Submit!</button>
         </form>
     </div>
 </div>

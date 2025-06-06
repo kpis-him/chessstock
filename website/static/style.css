@@ -3,3 +3,164 @@
   font-weight: 400;
   font-style: normal;
 }
+/* Base Styles */
+body {
+    background-color: #2792f070;
+    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+    color: #2d2d2d;
+}
+
+tbody td {
+    color: #01a3f4 !important; 
+}
+/* Navbar */
+.navbar {
+    background-color: #343a40 !important;
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: #fff !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+}
+
+/* Container */
+.container {
+    margin-top: 2rem;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Personality Quiz Results */
+.personality-box {
+    background: #fff;
+    border-left: 8px solid #6f42c1;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+
+.personality-box.aggressive { border-color: #dc3545; }
+.personality-box.tactical { border-color: #007bff; }
+.personality-box.random { border-color: #17a2b8; }
+.personality-box.calculator { border-color: #28a745; }
+
+/* Chess Board */
+#board {
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+.btn-primary, .btn-outline-primary {
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.btn-primary {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.btn-primary:hover {
+    background-color: #5a34a0;
+    border-color: #5a34a0;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+    #board {
+        width: 300px !important;
+    }
+}
+
+/* Button Base Styles */
+.btn {
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 10px 24px;
+    transition: all 0.25s ease-in-out;
+    text-transform: capitalize;
+}
+
+/* Primary Button (e.g. play bot, submit) */
+.btn-primary {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #5a34a0;
+    border-color: #5a34a0;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(111, 66, 193, 0.4);
+}
+
+/* Outline Button (e.g. secondary actions) */
+.btn-outline-primary {
+    border-color: #6f42c1;
+    color: #6f42c1;
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: #6f42c1;
+    color: #fff;
+}
+
+/* Danger/Reset/Retry Button */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+    border-color: #b02a37;
+}
+
+/* Button Grouping or Alignment */
+.button-row {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Global button styling */
+button {
+    border-radius: 25px;
+    background-color: #6f42c1;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    text-transform: capitalize;
+    margin: 8px;
+}
+
+button:hover,
+button:focus {
+    background-color: #5a34a0;
+    box-shadow: 0 0 10px rgba(111, 66, 193, 0.4);
+    outline: none;
+}
+
