@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 import mimetypes
 from google import genai
 import markdown
@@ -57,7 +57,18 @@ def myopuzzle():
         if request.method == "GET":
              return render_template("myopuzzle.html")
         if request.method == "POST":
-             return render_template("myopuzzle.html")   
+          data = request.get_json()
+          fen = data.get('elo')
+          response1 = client.models.generate_content(
+                    model="gemini-2.0-flash", 
+                    contents=f"{fen} is my position in a game of chess, no castling allowed, give me some insights on this position"
+               )
+          text = response1.candidates[0].content.parts[0].text
+
+          text1 = BeautifulSoup(text, "html.parser").get_text()
+          print(text1)
+          response = markdown.markdown(text1)
+          return jsonify({"response":response}), 200
         
 @app.route("/pubpuzzles", methods=["GET", "POST"])
 def pubpuzzles():

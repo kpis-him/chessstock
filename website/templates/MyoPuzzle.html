@@ -6,20 +6,30 @@
 </title>
 <div class="container">
     <div class="row">
+         
         <div class="col">
+            <h3>Why don't we play 960 without castling?</h3>
+            <p>1.Enter a difficulty, press submit</p>
+            <p>2.Create a position you would like to play against stockfish</p>
+            <p>3.Click Start Puzzle</p>
+            <p>4.Click Get Insight if you want to understand the position(optional)</p>
+
             <form>
-               <label for="name">Enter your difficulty(integer from 1-15):</label>
-               <input type="text" id="diff" name="difficulty">
-               <button type="submit" style="z-index: 0;" onclick="get_diff()">Submit</button>
+                <label for="name">Enter your difficulty(integer from 1-15):</label>
+                <input type="text" id="diff" name="difficulty">
+                <button type="submit" style="z-index: 0;" onclick="get_diff()">Submit</button>
             </form>
             <script>
-                function get_diff()  {
+                function get_diff() {
                     var diff = document.getElementById("diff").value;
                     console.log("diff = ", diff)
                 }
             </script>
             <div id="board2" style="width: 400px"></div>
             <button id="lock">Start Puzzle</button>
+            <input type="hidden" name="elo" id="fenOutput"><br />
+            <button onclick="submitFen()">Get insights</button>
+
             <p id="fenOutput"></p>
             <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
             <script>
@@ -27,7 +37,7 @@
                 var stockfish = new Worker('static/stockfish1/stockfish.js');
 
                 document.getElementById('board2').addEventListener('touchmove', function (e) {
-                    e.preventDefault(); // Prevent the default scrolling behavior
+                    e.preventDefault();
                 }, { passive: false });
                 var board2;
                 let chess = new Chess();
@@ -35,8 +45,30 @@
                 function getPNG() {
                     var fen = board2.fen();
                     console.log(fen);
-                    document.getElementById("fenOutput").innerText = fen;
+                    document.getElementById("fenOutput").value = fen;
                     return fen;
+                }
+                function submitFen() {
+                    const fen = board2.fen();
+
+                    fetch("{{ url_for('myopuzzle') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ elo: fen })
+                    })
+                        .then(response => {
+                            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Server response:", data);
+                            document.getElementById("insight-output").innerHTML = data.response;
+                        })
+                        .catch(error => {
+                            console.error("Fetch failed:", error);
+                        });
                 }
                 let puzzleLocked = false;
                 let bestMove = null;
@@ -54,7 +86,7 @@
                     onDrop: function (source, target) {
                         if (!puzzleLocked) return;
 
-                        if (chess.turn() !== 'w') return 'snapback'; // Only allow white to move
+                        if (chess.turn() !== 'w') return 'snapback';
 
                         const move = chess.move({
                             from: source,
@@ -87,7 +119,10 @@
                     if (!loaded) {
                         alert("Invalid FEN! Please fix the board.");
                         return;
+                    } else {
+                        alert("White plays first...")
                     }
+
 
                     puzzleLocked = true;
 
@@ -115,7 +150,7 @@
                 function stock_move(fen) {
                     stockfish.postMessage("position fen " + fen);
                     difficulty = get_diff()
-                    stockfish.postMessage("go depth ",difficulty);
+                    stockfish.postMessage("go depth ", difficulty);
 
                     stockfish.onmessage = function (e) {
                         const line = e.data;
@@ -147,7 +182,18 @@
                 }
 
             </script>
-
+        </div>
+        <div class="col">
+            <h1></h1>
+            <h1></h1>
+            <h1></h1>
+            <h1></h1>
+            <h1></h1>
+            <div class="card">
+                <div class="card-body">
+                    <p id="insight-output"></p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

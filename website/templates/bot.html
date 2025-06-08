@@ -20,13 +20,20 @@
 <div class="container">
     <div class="row">
         <h1>You are a/an {{winner}} player!!</h1>
+        <div class="card">
+            <div class="card-body">
+               <p>{{response | safe}}</p>
+            </div>
+        </div>
 
-        <p>{{response | safe}}</p>
         <h2>Do you want to play your new bot?</h2>
-        <p>{{name}}'s bot</p>
-        <h5>{{elo}}</h5>
+        <p>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            {{name}}'s bot</p>
+        <h5>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp; &emsp;
+            &emsp; &emsp; &emsp; &emsp; {{elo}}</h5>
 
-        <div id="board" style="width: 400px">
+        <div id="board" style="width: 400px; text-align: left;">
         </div>
         <script>
             var stockfish = new Worker('static/stockfish1/stockfish.js');
@@ -172,7 +179,11 @@
                 }, 100);
             }
         </script>
-        <p>You</p>
+        <br>
+        <br>
+        <p>&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;You
+        </p>
     </div>
     <div class="col">
         <button id="hint" onclick="giveHint()">Hint?</button>
