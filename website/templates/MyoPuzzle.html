@@ -6,11 +6,13 @@
 </title>
 <div class="container">
     <div class="row">
-         
+
         <div class="col">
-            <h3>Why don't we play 960 without castling?</h3>
+            <h3>Why don't we play some Chess960?</h3>
+            <h4>Chess 960, if you are unaware is a is a chess variant that randomizes the starting position of the pieces on the back rank, popularized by American World Chess Champion Bobby Fischer</h4>
+            <h5>What do you do:</h5>
             <p>1.Enter a difficulty, press submit</p>
-            <p>2.Create a position you would like to play against stockfish</p>
+            <p>2.Create a position you would like to play against stockfish or click Random 960</p>
             <p>3.Click Start Puzzle</p>
             <p>4.Click Get Insight if you want to understand the position(optional)</p>
 
@@ -26,9 +28,54 @@
                 }
             </script>
             <div id="board2" style="width: 400px"></div>
-            <button id="lock">Start Puzzle</button>
+            <button id="lock">Start</button>
+            <div class="col">
+                <button onclick="play960()">Random 960</button>
+            </div>
+            <script>
+                function randomFEN() {
+                    let backrank = Array(8).fill(null);
+                    const pieces = { R: 2, N: 2, B: 2, Q: 1, K: 1 };
+                    let b1 = Math.floor(Math.random() * 4) * 2;
+                    let b2 = Math.floor(Math.random() * 4) * 2 + 1;
+                    backrank[b1] = 'B';
+                    backrank[b2] = 'B';
+                    pieces.B -= 2;
+
+                    let emptySquares = backrank.map((p, i) => p === null ? i : null).filter(i => i !== null);
+                    let qIndex = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+                    backrank[qIndex] = 'Q';
+                    pieces.Q--;
+
+                    for (let i = 0; i < 2; i++) {
+                        emptySquares = backrank.map((p, i) => p === null ? i : null).filter(i => i !== null);
+                        let nIndex = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+                        backrank[nIndex] = 'N';
+                        pieces.N--;
+                    }
+
+                    emptySquares = backrank.map((p, i) => p === null ? i : null).filter(i => i !== null);
+                    emptySquares.sort((a, b) => a - b);
+                    backrank[emptySquares[0]] = 'R';
+                    backrank[emptySquares[1]] = 'K';
+                    backrank[emptySquares[2]] = 'R';
+
+                    const whiteBackRank = backrank.join('');
+                    const blackBackRank = whiteBackRank.toLowerCase();
+
+                    const fen = `${blackBackRank}/pppppppp/8/8/8/8/PPPPPPPP/${whiteBackRank} w KQkq - 0 1`;
+                    return fen;
+
+                }
+                function play960() {
+                    var fen = randomFEN();
+                    board2.position(fen);
+                    chess.load(fen);
+                    document.getElementById("fenOutput").value = fen
+                }
+            </script>
             <input type="hidden" name="elo" id="fenOutput"><br />
-            <button onclick="submitFen()">Get insights</button>
+            
 
             <p id="fenOutput"></p>
             <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
@@ -140,7 +187,7 @@
                         } else if (line.startsWith("bestmove")) {
                             bestMove = line.split(" ")[1];
                             console.log("Best move from Stockfish:", bestMove);
-                            board2.position(fen); 
+                            board2.position(fen);
                         }
                     };
                 });
@@ -184,16 +231,13 @@
             </script>
         </div>
         <div class="col">
-            <h1></h1>
-            <h1></h1>
-            <h1></h1>
-            <h1></h1>
-            <h1></h1>
+           
             <div class="card">
                 <div class="card-body">
                     <p id="insight-output"></p>
                 </div>
             </div>
+            <button onclick="submitFen()">Get insights</button>
         </div>
     </div>
 </div>

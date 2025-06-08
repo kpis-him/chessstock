@@ -4,7 +4,7 @@ from google import genai
 import markdown
 from bs4 import BeautifulSoup
 import re
-import spotipy
+
 
 
 mimetypes.add_type('application/wasm', '.wasm')
@@ -61,7 +61,7 @@ def myopuzzle():
           fen = data.get('elo')
           response1 = client.models.generate_content(
                     model="gemini-2.0-flash", 
-                    contents=f"{fen} is my position in a game of chess, no castling allowed, give me some insights on this position"
+                    contents=f"{fen} is my position in a game of chess as white, this is chess960, give me some opening strategies and analysis of the positional targets for me"
                )
           text = response1.candidates[0].content.parts[0].text
 
