@@ -2,7 +2,7 @@
 
 {% block main %}
 <title>
-    Make Your Own Puzzle!
+    Make Your Own Thing!
 </title>
 <div class="container">
     <div class="row">
@@ -10,14 +10,14 @@
         <div class="col">
             <h3>Why don't we play some Chess960?</h3>
             <h4>Chess 960, if you are unaware is a is a chess variant that randomizes the starting position of the pieces on the back rank, popularized by American World Chess Champion Bobby Fischer</h4>
-            <h5>What do you do:</h5>
+            <h5 class="faculty">What do you do:</h5>
             <p>1.Enter a difficulty, press submit</p>
             <p>2.Create a position you would like to play against stockfish or click Random 960</p>
             <p>3.Click Start Puzzle</p>
             <p>4.Click Get Insight if you want to understand the position(optional)</p>
 
             <form>
-                <label for="name">Enter your difficulty(integer from 1-15):</label>
+                <strong><label for="name" class="faculty">Enter your difficulty(integer from 1-15):</label></strong>
                 <input type="text" id="diff" name="difficulty">
                 <button type="submit" style="z-index: 0;" onclick="get_diff()">Submit</button>
             </form>
@@ -75,7 +75,7 @@
                 }
             </script>
             <input type="hidden" name="elo" id="fenOutput"><br />
-            
+
 
             <p id="fenOutput"></p>
             <script src="https://cdn.jsdelivr.net/npm/chess.js@0.10.3/chess.min.js"></script>
@@ -231,7 +231,7 @@
             </script>
         </div>
         <div class="col">
-           
+
             <div class="card">
                 <div class="card-body">
                     <p id="insight-output"></p>
