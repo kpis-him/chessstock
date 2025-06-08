@@ -140,7 +140,7 @@
                         } else if (line.startsWith("bestmove")) {
                             bestMove = line.split(" ")[1];
                             console.log("Best move from Stockfish:", bestMove);
-                            board2.position(fen); // update board without reinitializing
+                            board2.position(fen); 
                         }
                     };
                 });

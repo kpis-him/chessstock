@@ -59,17 +59,17 @@
                         (game.turn() === 'b' && piece.startsWith('w'))) {
                         return false;
                     }
-                    // Prevent move while engine thinking
+                    
                     if (engineThinking) return false;
                 },
                 onDrop: function (source, target) {
                     if (engineThinking) return 'snapback';
 
-                    // Try to make move on the game
+                    
                     const move = game.move({
                         from: source,
                         to: target,
-                        promotion: 'q' // always promote to queen for simplicity
+                        promotion: 'q' 
                     });
 
                     if (move === null) return 'snapback';
@@ -78,13 +78,13 @@
 
                     board.position(game.fen());
 
-                    // If now it's engine's turn, tell engine to think
+                   
                     if (game.turn() === engineColor) {
                         engineThinking = true;
                         stockfish.postMessage('stop');
                         stockfish.postMessage('position fen ' + game.fen());
 
-                        // Determine depth based on elo variable
+                        
                         const elo = '{{elo|int}}';
                         let depth = Math.floor(elo / 210);
                         depth = Math.min(Math.max(depth, 5), 10);
@@ -96,7 +96,7 @@
                 }
             });
 
-            // Disable scrolling on touch drag for the board
+            
             document.getElementById('board').addEventListener('touchmove', function (e) {
                 e.preventDefault();
             }, { passive: false });
@@ -120,7 +120,7 @@
                         hintRequested = false;
                         const bestMove = line.split(' ')[1];
                         const fromSquare = bestMove.slice(0, 2);
-                        const piece = game.get(fromSquare); // Get piece on 'from' square
+                        const piece = game.get(fromSquare); 
                         let pieceName = '';
                         if (piece) {
                             const names = {
