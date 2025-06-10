@@ -22,7 +22,7 @@
         <h1>You are a/an {{winner}} player!!</h1>
         <div class="card">
             <div class="card-body">
-               <p>{{response | safe}}</p>
+                <p>{{response | safe}}</p>
             </div>
         </div>
 
@@ -43,51 +43,40 @@
             var engineThinking = false;
             var moveList = [];
             var hintRequested = false;
-            const persona = "{{winner}}".toLowerCase();
+
+            const validPersonas = ["calculator", "tactical", "random", "aggressive"];
+            const personaRaw = "{{winner}}".toLowerCase();
+            const persona = validPersonas.includes(personaRaw) ? personaRaw : "calculator";
 
             var board = Chessboard('board', {
                 position: 'start',
                 pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png',
                 draggable: true,
                 onDragStart: function (source, piece) {
-                    if (game.game_over()) {
-                        console.log("Game over!");
-                        return false;
-                    }
-                    // Only allow user to move their pieces
+                    if (game.game_over()) return false;
                     if ((game.turn() === 'w' && piece.startsWith('b')) ||
-                        (game.turn() === 'b' && piece.startsWith('w'))) {
-                        return false;
-                    }
-                    
+                        (game.turn() === 'b' && piece.startsWith('w'))) return false;
                     if (engineThinking) return false;
                 },
                 onDrop: function (source, target) {
                     if (engineThinking) return 'snapback';
-
-                    
                     const move = game.move({
                         from: source,
                         to: target,
-                        promotion: 'q' 
+                        promotion: 'q'
                     });
-
                     if (move === null) return 'snapback';
-
-                    console.log("User move:", move.san);
 
                     board.position(game.fen());
 
-                   
                     if (game.turn() === engineColor) {
                         engineThinking = true;
                         stockfish.postMessage('stop');
                         stockfish.postMessage('position fen ' + game.fen());
-
-                        
                         const elo = '{{elo|int}}';
                         let depth = Math.floor(elo / 210);
                         depth = Math.min(Math.max(depth, 5), 10);
+                        moveList = [];
                         stockfish.postMessage(`go depth ${depth}`);
                     }
                 },
@@ -96,10 +85,26 @@
                 }
             });
 
-            
             document.getElementById('board').addEventListener('touchmove', function (e) {
                 e.preventDefault();
             }, { passive: false });
+
+            function chooseMoveByPersona(moves, type) {
+                if (moves.length === 0) return null;
+                switch (type) {
+                    case "calculator":
+                        return moves[0]; // best move
+                    case "tactical":
+                        return moves[1] || moves[0]; // 2nd best
+                    case "random":
+                        return moves[Math.floor(Math.random() * moves.length)];
+                    case "aggressive":
+                        const captures = moves.filter(m => m.includes("x"));
+                        return captures[0] || moves[0];
+                    default:
+                        return moves[0];
+                }
+            }
 
             stockfish.postMessage("setoption name MultiPV value 3");
 
@@ -120,7 +125,7 @@
                         hintRequested = false;
                         const bestMove = line.split(' ')[1];
                         const fromSquare = bestMove.slice(0, 2);
-                        const piece = game.get(fromSquare); 
+                        const piece = game.get(fromSquare);
                         let pieceName = '';
                         if (piece) {
                             const names = {
@@ -136,27 +141,24 @@
                         alert(`Hint: Move your ${pieceName} from ${bestMove.slice(0, 2)} to ${bestMove.slice(2, 4)}`);
                         document.getElementById('hint').disabled = false;
                     } else {
-                        if (game.turn() !== engineColor) {
-                            console.log("Ignoring Stockfish move: not engine's turn");
-                            return;
+                        if (game.turn() !== engineColor) return;
+
+                        let chosenMove = chooseMoveByPersona(moveList, persona);
+                        if (!chosenMove) {
+                            chosenMove = line.split(' ')[1];
                         }
 
-                        const bestMove = line.split(' ')[1];
-                        console.log("Stockfish bestmove:", bestMove);
-
                         const moveObj = game.move({
-                            from: bestMove.slice(0, 2),
-                            to: bestMove.slice(2, 4),
-                            promotion: bestMove.length > 4 ? bestMove[4] : 'q'
+                            from: chosenMove.slice(0, 2),
+                            to: chosenMove.slice(2, 4),
+                            promotion: chosenMove.length > 4 ? chosenMove[4] : 'q'
                         });
 
                         if (moveObj === null) {
-                            console.error("Illegal move from Stockfish:", bestMove);
+                            console.error("Illegal move from Stockfish:", chosenMove);
                             engineThinking = false;
                             return;
                         }
-
-                        console.log("Engine move executed:", moveObj.san);
 
                         board.position(game.fen());
                         moveList = [];
@@ -170,14 +172,14 @@
                 engineThinking = true;
                 hintRequested = true;
                 document.getElementById('hint').disabled = true;
-
                 stockfish.postMessage('stop');
-
                 setTimeout(() => {
                     stockfish.postMessage('position fen ' + game.fen());
                     stockfish.postMessage('go movetime 1000');
                 }, 100);
             }
+        </script>
+
         </script>
         <br>
         <br>

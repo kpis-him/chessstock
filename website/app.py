@@ -61,7 +61,7 @@ def myopuzzle():
           fen = data.get('elo')
           response1 = client.models.generate_content(
                     model="gemini-2.0-flash", 
-                    contents=f"{fen} is my position in a game of chess as white, this is chess960, give me some opening strategies and analysis of the positional targets for me"
+                    contents=f"{fen} is my position in a game of chess as white, this is chess960, give me some opening strategies and analysis of the positional targets for me, make it short and sweet"
                )
           text = response1.candidates[0].content.parts[0].text
 
