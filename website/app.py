@@ -9,7 +9,7 @@ import re
 
 mimetypes.add_type('application/wasm', '.wasm')
 app = Flask(__name__)
-client = genai.Client(api_key="AIzaSyBbmk-ZMKpywSb_GMCBtjkiGamltst9k2Q")
+client = genai.Client(api_key="{api_key}")
 @app.after_request
 def add_coop_coep_headers(response):
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
